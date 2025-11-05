@@ -1,0 +1,99 @@
+.hierarchical-tree {
+    font-size: 14px;
+    user-select: none;
+}
+
+.tree-node-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    border-radius: 4px;
+    margin: 2px 0;
+}
+
+.tree-node-item:hover {
+    background-color: rgba(0, 120, 212, 0.1);
+}
+
+.tree-node-item.variable-group:hover {
+    background-color: rgba(0, 120, 212, 0.15);
+}
+
+.tree-node-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tree-node-icon {
+    font-size: 12px;
+    color: #605E5C;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.tree-node-icon-placeholder {
+    width: 12px;
+    flex-shrink: 0;
+}
+
+.tree-node-type-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    color: #0078D4;
+}
+
+.tree-node-item.folder .tree-node-type-icon {
+    color: #FFB900;
+}
+
+.tree-node-name {
+    flex-grow: 1;
+    font-weight: 400;
+}
+
+.tree-node-item.variable-group .tree-node-name {
+    font-weight: 500;
+    color: #0078D4;
+}
+
+.tree-node-info-icon {
+    font-size: 14px;
+    color: #605E5C;
+    opacity: 0.7;
+}
+
+.tree-node-info-icon:hover {
+    opacity: 1;
+}
+
+.tree-node-children {
+    margin-left: 0;
+}
+
+/* Hover effect for clickable items */
+.tree-node-item.variable-group {
+    position: relative;
+}
+
+.tree-node-item.variable-group::after {
+    content: "Ctrl+Click or Right-click to open in new tab";
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+    margin-top: 4px;
+}
+
+.tree-node-item.variable-group:hover::after {
+    opacity: 1;
+}

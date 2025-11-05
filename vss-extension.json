@@ -1,0 +1,51 @@
+{
+  "manifestVersion": 1,
+  "id": "library-enhancer",
+  "name": "Library Enhancer",
+  "version": "1.0.0",
+  "publisher": "milvasoft",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "description": "Enhanced Library/Variable Groups management with hierarchical grouping",
+  "categories": ["Azure Pipelines"],
+  "icons": {
+    "default": "images/logo.png"
+  },
+  "content": {
+    "details": {
+      "path": "README.md"
+    }
+  },
+  "contributions": [
+    {
+      "id": "enhanced-library-hub",
+      "type": "ms.vss-web.hub",
+      "description": "Enhanced Library Hub with hierarchical variable groups",
+      "targets": [
+        "ms.vss-build-web.build-release-hub-group"
+      ],
+      "properties": {
+        "name": "Library (Enhanced)",
+        "order": 31,
+        "uri": "dist/library-hub.html",
+        "icon": {
+          "light": "images/icon-light.png",
+          "dark": "images/icon-dark.png"
+        }
+      }
+    }
+  ],
+  "files": [
+    {
+      "path": "dist",
+      "addressable": true
+    },
+    {
+      "path": "images",
+      "addressable": true
+    }
+  ]
+}
