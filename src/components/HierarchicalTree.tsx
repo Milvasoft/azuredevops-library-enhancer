@@ -87,8 +87,8 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                 setTimeout(() => {
                     this.setState({ isCopied: false });
                 }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+            }).catch(() => {
+                // Silent fail
             });
         }
     };

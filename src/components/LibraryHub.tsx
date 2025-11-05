@@ -42,12 +42,8 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
     async componentDidMount() {
         try {
             await SDK.ready();
-            
-            console.log('SDK Ready');
-            console.log('Host:', SDK.getHost());
-            console.log('User:', SDK.getUser());
 
-            // Proje bilgilerini al
+            // Get project information
             const projectService = await SDK.getService<IProjectPageService>(
                 CommonServiceIds.ProjectPageService
             );
@@ -58,12 +54,10 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             }
 
             this.projectName = project.name;
-            console.log('Project name:', this.projectName);
             
-            // Organization URL'ini al
+            // Get organization URL
             const hostContext = SDK.getHost();
             this.organizationUrl = `https://${hostContext.name}.visualstudio.com`;
-            console.log('Organization URL:', this.organizationUrl);
 
             // Fetch Variable Groups
             await this.loadVariableGroups();
@@ -79,8 +73,6 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
 
     private async loadVariableGroups() {
         try {
-            console.log('Loading variable groups for project:', this.projectName);
-            
             // Create RestClient with project context
             const client = getClient(TaskAgentRestClient);
             
@@ -94,18 +86,19 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                 throw new Error("Project information not available");
             }
             
-            console.log('Using project ID:', project.id);
-            
             const vgs = await client.getVariableGroups(project.id);
-
-            console.log('Variable groups loaded:', vgs.length);
 
             const variableGroups: VariableGroup[] = vgs.map(vg => ({
                 id: vg.id!,
                 name: vg.name!,
                 description: vg.description || "",
                 type: vg.type || "",
-                variables: vg.variables
+                variables: vg.variables,
+                modifiedOn: vg.modifiedOn?.toISOString(),
+                modifiedBy: vg.modifiedBy ? {
+                    displayName: vg.modifiedBy.displayName || '',
+                    id: vg.modifiedBy.id || ''
+                } : undefined
             }));
 
             // Build hierarchical structure
@@ -118,7 +111,6 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             });
 
         } catch (error) {
-            console.error('Error loading variable groups:', error);
             this.setState({
                 loading: false,
                 error: error instanceof Error ? error.message : "Failed to load variable groups"
@@ -274,10 +266,8 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 if (navigator.clipboard) {
-                                                                    navigator.clipboard.writeText(vg.name).then(() => {
-                                                                        console.log('Name copied:', vg.name);
-                                                                    }).catch(err => {
-                                                                        console.error('Failed to copy:', err);
+                                                                    navigator.clipboard.writeText(vg.name).catch(() => {
+                                                                        // Silent fail
                                                                     });
                                                                 }
                                                             }}

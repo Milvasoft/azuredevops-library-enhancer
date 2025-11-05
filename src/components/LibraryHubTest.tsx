@@ -35,7 +35,6 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
     componentDidMount() {
         try {
             const { variableGroups } = this.props;
-            console.log('Building hierarchy for', variableGroups.length, 'variable groups');
             
             const treeRoot = VariableGroupService.buildHierarchy(variableGroups);
             
@@ -44,7 +43,6 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                 treeRoot
             });
         } catch (error) {
-            console.error('Error building hierarchy:', error);
             this.setState({
                 loading: false,
                 error: error instanceof Error ? error.message : "Failed to build hierarchy"
@@ -54,8 +52,6 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
 
     private handleVariableGroupClick = (vg: VariableGroup, openInNewTab: boolean) => {
         const url = `https://milvasoft.visualstudio.com/Opsiyon/_library?itemType=VariableGroups&view=VariableGroupView&variableGroupId=${vg.id}`;
-        
-        console.log(`${openInNewTab ? 'Opening in new tab' : 'Navigating to'}: ${vg.name} (${url})`);
         
         if (openInNewTab) {
             window.open(url, '_blank');
@@ -198,17 +194,15 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                     <Icon
                                                         iconName="Copy"
                                                         className="copy-icon"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            if (navigator.clipboard) {
-                                                                navigator.clipboard.writeText(vg.name).then(() => {
-                                                                    console.log('Name copied:', vg.name);
-                                                                }).catch(err => {
-                                                                    console.error('Failed to copy:', err);
-                                                                });
-                                                            }
-                                                        }}
-                                                        title="Copy name"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (navigator.clipboard) {
+                                                                    navigator.clipboard.writeText(vg.name).catch(err => {
+                                                                        // Silent fail
+                                                                    });
+                                                                }
+                                                            }}
+                                                            title="Copy name"
                                                     />
                                                 </div>
                                                 <div className="table-cell date-column">
