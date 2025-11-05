@@ -13,7 +13,7 @@
   "description": "Enhanced Library/Variable Groups management with hierarchical grouping",
   "categories": ["Azure Pipelines"],
   "scopes": [
-    "vso.variablegroups"
+    "vso.variablegroups_read"
   ],
   "icons": {
     "default": "images/icon.png"
