@@ -80,6 +80,7 @@
 .hierarchical-tree-table {
     width: 100%;
     background: var(--background-color, #fff);
+    overflow-x: auto;
 }
 
 .table-header {
@@ -91,6 +92,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    min-width: 900px;
 }
 
 .table-header-cell {
@@ -112,6 +114,7 @@
     border-bottom: 1px solid var(--palette-neutral-8, #f3f2f1);
     cursor: pointer;
     transition: background-color 0.1s ease;
+    min-width: 900px;
 }
 
 .table-row:hover {
@@ -141,89 +144,103 @@
 
 /* Column Widths */
 .name-column {
-    flex: 0 0 35%;
-    min-width: 280px;
+    flex: 1 1 35%;
+    min-width: 300px;
+    max-width: none;
 }
 
 .date-column {
-    flex: 0 0 130px;
-    min-width: 130px;
+    flex: 0 0 150px;
+    min-width: 150px;
 }
 
 .modified-by-column {
-    flex: 0 0 180px;
-    min-width: 180px;
-}
-
-.description-column {
-    flex: 1;
+    flex: 0 0 200px;
     min-width: 200px;
 }
 
+.description-column {
+    flex: 1 1 25%;
+    min-width: 200px;
+    max-width: none;
+}
+
 .variables-column {
-    flex: 0 0 90px;
-    min-width: 90px;
+    flex: 0 0 100px;
+    min-width: 100px;
     justify-content: center;
 }
 
 /* Name Column Content */
 .chevron-icon {
     flex-shrink: 0;
-    font-size: 16px;
-    color: var(--text-secondary-color, #605e5c);
-    margin-right: 8px;
+    margin-right: 4px;
     cursor: pointer;
-    transition: transform 0.1s ease;
 }
 
-.chevron-icon:hover {
-    color: var(--text-primary-color, #323130);
+.chevron-icon i {
+    font-size: 12px !important;
+    line-height: 16px;
+    color: var(--text-secondary-color, #605e5c);
 }
 
 .chevron-placeholder {
     width: 16px;
-    margin-right: 8px;
+    height: 16px;
+    margin-right: 4px;
     flex-shrink: 0;
 }
 
 .type-icon {
     flex-shrink: 0;
-    font-size: 16px;
-    margin-right: 8px;
+    margin-right: 6px;
 }
 
-.type-icon.variable-icon {
-    color: var(--communication-foreground, #0078d4);
+.type-icon i {
+    font-size: 16px !important;
+    line-height: 16px;
 }
 
-.type-icon.folder-icon {
-    color: var(--status-warning-text, #ffb900);
+.type-icon.variable-icon i {
+    color: var(--communication-foreground, #0078d4) !important;
+}
+
+.type-icon.folder-icon i {
+    color: var(--status-warning-text, #ffb900) !important;
 }
 
 .copy-icon {
     flex-shrink: 0;
-    font-size: 14px;
     margin-left: 8px;
-    color: var(--text-secondary-color, #605e5c);
     opacity: 0;
     cursor: pointer;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease;
+}
+
+.copy-icon i {
+    font-size: 14px !important;
+    line-height: 16px;
+    color: var(--text-secondary-color, #605e5c);
+    transition: color 0.2s ease;
 }
 
 .table-row:hover .copy-icon {
     opacity: 1;
 }
 
-.copy-icon:hover {
-    color: var(--communication-foreground, #0078d4);
+.copy-icon:hover i {
+    color: var(--communication-foreground, #0078d4) !important;
 }
 
 .copy-icon:active {
     transform: scale(0.95);
 }
 
-.copy-icon.copied {
+.copy-icon.copied i {
     color: var(--status-success-text, #107c10) !important;
+}
+
+.copy-icon.copied {
     opacity: 1 !important;
 }
 
