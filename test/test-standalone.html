@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Enhancer - Local Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f2f1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1.6px 3.6px 0 rgba(0,0,0,0.132), 0 0.3px 0.9px 0 rgba(0,0,0,0.108);
+        }
+        .header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #edebe9;
+        }
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #323130;
+        }
+        .content {
+            padding: 24px;
+        }
+        #root {
+            min-height: 400px;
+        }
+        .info-banner {
+            background-color: #e1dfdd;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #323130;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Library Enhancer - Local Test Preview</h1>
+        </div>
+        <div class="content">
+            <div class="info-banner">
+                ℹ️ This is a standalone test page. The hierarchical tree will render below with mock data.
+            </div>
+            <div id="root"></div>
+        </div>
+    </div>
+    
+    <!-- Load the test hub bundle (without SDK) -->
+    <script src="../dist/test-hub.js"></script>
+</body>
+</html>

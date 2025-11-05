@@ -1,7 +1,6 @@
 import * as React from "react";
 import { TreeNode, VariableGroup } from "../types/types";
 import { Icon } from "azure-devops-ui/Icon";
-import { Tooltip } from "azure-devops-ui/TooltipEx";
 import "./HierarchicalTree.css";
 
 interface HierarchicalTreeProps {
@@ -13,7 +12,6 @@ interface TreeNodeItemProps {
     node: TreeNode;
     level: number;
     onVariableGroupClick: (vg: VariableGroup, openInNewTab: boolean) => void;
-    onToggle: (node: TreeNode) => void;
 }
 
 interface TreeNodeItemState {
@@ -24,28 +22,31 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
     constructor(props: TreeNodeItemProps) {
         super(props);
         this.state = {
-            isExpanded: props.node.isExpanded
+            isExpanded: false
         };
     }
 
-    private handleToggle = () => {
+    private handleToggle = (e: React.MouseEvent) => {
+        e.stopPropagation();
         this.setState(prevState => ({
             isExpanded: !prevState.isExpanded
         }));
-        this.props.onToggle(this.props.node);
     };
 
-    private handleClick = (e: React.MouseEvent) => {
+    private handleRowClick = (e: React.MouseEvent) => {
         const { node, onVariableGroupClick } = this.props;
+        const hasChildren = node.children.size > 0;
         
-        if (node.variableGroup) {
-            // Ctrl veya middle click ile yeni sekmede aç
-            const openInNewTab = e.ctrlKey || e.metaKey || e.button === 1;
-            e.preventDefault();
+        // Eğer child'ları varsa collapse/expand yap
+        if (hasChildren) {
+            this.setState(prevState => ({
+                isExpanded: !prevState.isExpanded
+            }));
+        }
+        // Eğer variable group ise ve child'ı yoksa aç
+        else if (node.variableGroup) {
+            const openInNewTab = e.ctrlKey || e.metaKey;
             onVariableGroupClick(node.variableGroup, openInNewTab);
-        } else {
-            // Grup ise toggle yap
-            this.handleToggle();
         }
     };
 
@@ -54,7 +55,6 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
         
         if (node.variableGroup) {
             e.preventDefault();
-            // Sağ tık ile yeni sekmede aç
             onVariableGroupClick(node.variableGroup, true);
         }
     };
@@ -64,98 +64,101 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
         const { isExpanded } = this.state;
         const hasChildren = node.children.size > 0;
         const isVariableGroup = !!node.variableGroup;
-
-        const paddingLeft = level * 20;
+        const variableCount = node.variableGroup ? Object.keys(node.variableGroup.variables || {}).length : 0;
+        
+        // Format date
+        const modifiedDate = node.variableGroup?.modifiedOn 
+            ? new Date(node.variableGroup.modifiedOn).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+              })
+            : '';
+        
+        const modifiedBy = node.variableGroup?.modifiedBy?.displayName || '';
 
         return (
             <>
                 <div
-                    className={`tree-node-item ${isVariableGroup ? 'variable-group' : 'folder'}`}
-                    style={{ paddingLeft: `${paddingLeft}px` }}
-                    onClick={this.handleClick}
+                    className={`table-row ${isVariableGroup ? 'variable-group-row' : 'folder-row'} ${hasChildren && isExpanded ? 'expanded-parent' : ''}`}
+                    style={{ 
+                        paddingLeft: 0,
+                        backgroundColor: level > 0 ? `rgba(0, 0, 0, ${0.02 + (level * 0.02)})` : undefined
+                    }}
+                    onClick={this.handleRowClick}
                     onContextMenu={this.handleContextMenu}
                 >
-                    <div className="tree-node-content">
-                        {hasChildren && !isVariableGroup && (
+                    <div className="table-cell name-column" style={{ paddingLeft: `${16 + level * 20}px` }}>
+                        {hasChildren && (
                             <Icon
                                 iconName={isExpanded ? "ChevronDown" : "ChevronRight"}
-                                className="tree-node-icon"
+                                className="chevron-icon"
                             />
                         )}
-                        {!hasChildren && !isVariableGroup && (
-                            <div className="tree-node-icon-placeholder" />
-                        )}
+                        {!hasChildren && <div className="chevron-placeholder" />}
                         <Icon
-                            iconName={isVariableGroup ? "Variable" : "FabricFolder"}
-                            className="tree-node-type-icon"
+                            iconName={isVariableGroup ? "Variable2" : "FabricFolderFill"}
+                            className={`type-icon ${isVariableGroup ? 'variable-icon' : 'folder-icon'}`}
                         />
-                        <span className="tree-node-name">
-                            {node.name}
-                        </span>
-                        {isVariableGroup && node.variableGroup?.description && (
-                            <Tooltip text={node.variableGroup.description}>
-                                <Icon iconName="Info" className="tree-node-info-icon" />
-                            </Tooltip>
+                        <span className="node-name">{node.name}</span>
+                        {hasChildren && !isVariableGroup && (
+                            <span className="count-badge">{node.children.size}</span>
                         )}
+                    </div>
+                    <div className="table-cell date-column">
+                        {modifiedDate}
+                    </div>
+                    <div className="table-cell modified-by-column">
+                        {modifiedBy}
+                    </div>
+                    <div className="table-cell description-column">
+                        {node.variableGroup?.description || ''}
+                    </div>
+                    <div className="table-cell variables-column">
+                        {isVariableGroup ? variableCount : ''}
                     </div>
                 </div>
                 
                 {hasChildren && isExpanded && (
-                    <div className="tree-node-children">
+                    <>
                         {Array.from(node.children.values()).map((childNode) => (
                             <TreeNodeItem
                                 key={childNode.fullPath}
                                 node={childNode}
                                 level={level + 1}
                                 onVariableGroupClick={this.props.onVariableGroupClick}
-                                onToggle={this.props.onToggle}
                             />
                         ))}
-                    </div>
+                    </>
                 )}
             </>
         );
     }
 }
 
-interface HierarchicalTreeState {
-    expandedNodes: Set<string>;
-}
-
-export class HierarchicalTree extends React.Component<HierarchicalTreeProps, HierarchicalTreeState> {
-    constructor(props: HierarchicalTreeProps) {
-        super(props);
-        this.state = {
-            expandedNodes: new Set()
-        };
-    }
-
-    private handleToggle = (node: TreeNode) => {
-        this.setState(prevState => {
-            const expandedNodes = new Set(prevState.expandedNodes);
-            if (expandedNodes.has(node.fullPath)) {
-                expandedNodes.delete(node.fullPath);
-            } else {
-                expandedNodes.add(node.fullPath);
-            }
-            return { expandedNodes };
-        });
-    };
-
+export class HierarchicalTree extends React.Component<HierarchicalTreeProps> {
     render() {
         const { root, onVariableGroupClick } = this.props;
 
         return (
-            <div className="hierarchical-tree">
-                {Array.from(root.children.values()).map((node) => (
-                    <TreeNodeItem
-                        key={node.fullPath}
-                        node={node}
-                        level={0}
-                        onVariableGroupClick={onVariableGroupClick}
-                        onToggle={this.handleToggle}
-                    />
-                ))}
+            <div className="hierarchical-tree-table">
+                <div className="table-header">
+                    <div className="table-header-cell name-column">Name</div>
+                    <div className="table-header-cell date-column">Date modified</div>
+                    <div className="table-header-cell modified-by-column">Modified by</div>
+                    <div className="table-header-cell description-column">Description</div>
+                    <div className="table-header-cell variables-column">Variables</div>
+                </div>
+                <div className="table-body">
+                    {Array.from(root.children.values()).map((node) => (
+                        <TreeNodeItem
+                            key={node.fullPath}
+                            node={node}
+                            level={0}
+                            onVariableGroupClick={onVariableGroupClick}
+                        />
+                    ))}
+                </div>
             </div>
         );
     }

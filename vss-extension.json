@@ -2,8 +2,9 @@
   "manifestVersion": 1,
   "id": "library-enhancer",
   "name": "Library Enhancer",
-  "version": "1.0.0",
+  "version": "2.0.19",
   "publisher": "milvasoft",
+  "public": true,
   "targets": [
     {
       "id": "Microsoft.VisualStudio.Services"
@@ -11,8 +12,12 @@
   ],
   "description": "Enhanced Library/Variable Groups management with hierarchical grouping",
   "categories": ["Azure Pipelines"],
+  "scopes": [
+    "vso.build_execute",
+    "vso.variablegroups_manage"
+  ],
   "icons": {
-    "default": "images/logo.png"
+    "default": "images/icon.png"
   },
   "content": {
     "details": {
@@ -30,22 +35,24 @@
       "properties": {
         "name": "Library (Enhanced)",
         "order": 31,
-        "uri": "dist/library-hub.html",
-        "icon": {
-          "light": "images/icon-light.png",
-          "dark": "images/icon-dark.png"
-        }
+        "uri": "dist/library-hub.html"
       }
     }
   ],
   "files": [
     {
       "path": "dist",
-      "addressable": true
+      "addressable": true,
+      "packagePath": "dist"
     },
     {
       "path": "images",
-      "addressable": true
+      "addressable": true,
+      "packagePath": "images"
     }
-  ]
+  ],
+  "ContentType": {
+    ".woff2": "font/woff2",
+    ".woff": "font/woff"
+  }
 }

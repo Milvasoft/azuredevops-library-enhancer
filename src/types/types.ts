@@ -4,6 +4,11 @@ export interface VariableGroup {
     description: string;
     type: string;
     variables?: { [key: string]: any };
+    modifiedOn?: string;
+    modifiedBy?: {
+        displayName: string;
+        id: string;
+    };
 }
 
 export interface TreeNode {

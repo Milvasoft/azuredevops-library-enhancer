@@ -3,7 +3,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
-    'library-hub': './src/library-hub.tsx'
+    'library-hub': './src/library-hub.tsx',
+    'test-hub': './src/test-hub.tsx'
   },
   output: {
     filename: '[name].js',

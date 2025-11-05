@@ -1,4 +1,5 @@
 import * as React from "react";
+import "azure-devops-ui/Core/override.css";
 import { Card } from "azure-devops-ui/Card";
 import { Observer } from "azure-devops-ui/Observer";
 import { ObservableValue } from "azure-devops-ui/Core/Observable";
@@ -37,6 +38,10 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
     async componentDidMount() {
         try {
             await SDK.ready();
+            
+            console.log('SDK Ready');
+            console.log('Host:', SDK.getHost());
+            console.log('User:', SDK.getUser());
 
             // Proje bilgilerini al
             const projectService = await SDK.getService<IProjectPageService>(
@@ -49,15 +54,18 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             }
 
             this.projectName = project.name;
+            console.log('Project name:', this.projectName);
             
             // Organization URL'ini al
             const hostContext = SDK.getHost();
             this.organizationUrl = `https://${hostContext.name}.visualstudio.com`;
+            console.log('Organization URL:', this.organizationUrl);
 
             // Variable Group'ları çek
             await this.loadVariableGroups();
 
         } catch (error) {
+            console.error('Component mount error:', error);
             this.setState({
                 loading: false,
                 error: error instanceof Error ? error.message : "An unknown error occurred"
@@ -67,8 +75,26 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
 
     private async loadVariableGroups() {
         try {
+            console.log('Loading variable groups for project:', this.projectName);
+            
+            // RestClient'ı project context ile oluştur
             const client = getClient(TaskAgentRestClient);
-            const vgs = await client.getVariableGroups(this.projectName);
+            
+            // Project name yerine project ID kullanmayı deneyelim
+            const projectService = await SDK.getService<IProjectPageService>(
+                CommonServiceIds.ProjectPageService
+            );
+            const project = await projectService.getProject();
+            
+            if (!project || !project.id) {
+                throw new Error("Project information not available");
+            }
+            
+            console.log('Using project ID:', project.id);
+            
+            const vgs = await client.getVariableGroups(project.id);
+
+            console.log('Variable groups loaded:', vgs.length);
 
             const variableGroups: VariableGroup[] = vgs.map(vg => ({
                 id: vg.id!,
@@ -88,6 +114,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             });
 
         } catch (error) {
+            console.error('Error loading variable groups:', error);
             this.setState({
                 loading: false,
                 error: error instanceof Error ? error.message : "Failed to load variable groups"
