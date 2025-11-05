@@ -122,7 +122,7 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                 onClick={this.toggleViewMode}
                                 title="Hierarchy View"
                             >
-                                <span className="icon">📊</span>
+                                <span className="icon">📑</span>
                                 Hierarchy
                             </button>
                             <button 
@@ -190,12 +190,6 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                 }}
                                             >
                                                 <div className="table-cell name-column" style={{ paddingLeft: '16px' }}>
-                                                    <span 
-                                                        className="type-icon variable-icon"
-                                                        style={{ fontSize: '16px', marginRight: '8px' }}
-                                                    >
-                                                        📦
-                                                    </span>
                                                     <span className="node-name">{vg.name}</span>
                                                     <span
                                                         className="copy-icon"
@@ -215,7 +209,7 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                             }}
                                                             title="Copy name"
                                                         >
-                                                            📄
+                                                            🗐
                                                         </span>
                                                 </div>
                                                 <div className="table-cell date-column">

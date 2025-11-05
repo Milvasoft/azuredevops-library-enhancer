@@ -1,6 +1,5 @@
 import * as React from "react";
 import { TreeNode, VariableGroup } from "../types/types";
-import { Icon } from "azure-devops-ui/Icon";
 import "./HierarchicalTree.css";
 
 interface HierarchicalTreeProps {
@@ -80,16 +79,44 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
         e.stopPropagation();
         const { node } = this.props;
         
-        if (navigator.clipboard && node.variableGroup) {
+        if (node.variableGroup) {
             const fullName = node.variableGroup.name;
-            navigator.clipboard.writeText(fullName).then(() => {
-                this.setState({ isCopied: true });
-                setTimeout(() => {
-                    this.setState({ isCopied: false });
-                }, 2000);
-            }).catch(() => {
-                // Silent fail
-            });
+            
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(fullName).then(() => {
+                    this.setState({ isCopied: true });
+                    setTimeout(() => {
+                        this.setState({ isCopied: false });
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback to execCommand
+                    this.fallbackCopy(fullName);
+                });
+            } else {
+                // Use fallback method
+                this.fallbackCopy(fullName);
+            }
+        }
+    };
+
+    private fallbackCopy = (text: string) => {
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            this.setState({ isCopied: true });
+            setTimeout(() => {
+                this.setState({ isCopied: false });
+            }, 2000);
+        } catch (err) {
+            // Silent fail
         }
     };
 
@@ -137,7 +164,7 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                             className={`type-icon ${isVariableGroup ? 'variable-icon' : 'folder-icon'}`}
                             style={{ fontSize: '16px', marginRight: '8px' }}
                         >
-                            {isVariableGroup ? '📦' : '📁'}
+                            {isVariableGroup ? '' : '📁'}
                         </span>
                         <span className="node-name">{node.name}</span>
                         {isVariableGroup && (
@@ -148,11 +175,10 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                                 style={{ 
                                     fontSize: '14px', 
                                     marginLeft: '8px',
-                                    cursor: 'pointer',
-                                    opacity: 0
+                                    cursor: 'pointer'
                                 }}
                             >
-                                {isCopied ? '✅' : '📄'}
+                                {isCopied ? '🗸' : '🗐'}
                             </span>
                         )}
                         {hasChildren && !isVariableGroup && (

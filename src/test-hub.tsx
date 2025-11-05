@@ -6,7 +6,7 @@ import { LibraryHubTest } from "./components/LibraryHubTest";
 fetch('./test/test-data.json')
     .then(response => response.json())
     .then(data => {
-        console.log('✅ Loaded', data.value.length, 'variable groups');
+        console.log('🗸 Loaded', data.value.length, 'variable groups');
         
         ReactDOM.render(
             <LibraryHubTest variableGroups={data.value} />,

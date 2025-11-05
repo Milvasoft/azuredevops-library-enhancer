@@ -192,13 +192,13 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                     className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
                                     onClick={this.toggleViewMode}
                                 >
-                                    🗂️ Hierarchy
+                                    📑 Hierarchy
                                 </button>
                                 <button 
                                     className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
                                     onClick={this.toggleViewMode}
                                 >
-                                    📋 List
+                                    ☰ List
                                 </button>
                             </div>
                         </div>
@@ -256,12 +256,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                                     }}
                                                 >
                                                     <div className="table-cell name-column" style={{ paddingLeft: '16px' }}>
-                                                        <span 
-                                                            className="type-icon variable-icon"
-                                                            style={{ fontSize: '16px', marginRight: '8px' }}
-                                                        >
-                                                            📦
-                                                        </span>
+
                                                         <span className="node-name">{vg.name}</span>
                                                         <span
                                                             className="copy-icon"
@@ -273,15 +268,44 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                                             }}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                if (navigator.clipboard) {
-                                                                    navigator.clipboard.writeText(vg.name).catch(() => {
-                                                                        // Silent fail
-                                                                    });
-                                                                }
+                                                                const copyText = (text: string) => {
+                                                                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                                        navigator.clipboard.writeText(text).catch(() => {
+                                                                            // Fallback
+                                                                            try {
+                                                                                const textArea = document.createElement('textarea');
+                                                                                textArea.value = text;
+                                                                                textArea.style.position = 'fixed';
+                                                                                textArea.style.left = '-999999px';
+                                                                                document.body.appendChild(textArea);
+                                                                                textArea.select();
+                                                                                document.execCommand('copy');
+                                                                                document.body.removeChild(textArea);
+                                                                            } catch (err) {
+                                                                                // Silent fail
+                                                                            }
+                                                                        });
+                                                                    } else {
+                                                                        // Use fallback
+                                                                        try {
+                                                                            const textArea = document.createElement('textarea');
+                                                                            textArea.value = text;
+                                                                            textArea.style.position = 'fixed';
+                                                                            textArea.style.left = '-999999px';
+                                                                            document.body.appendChild(textArea);
+                                                                            textArea.select();
+                                                                            document.execCommand('copy');
+                                                                            document.body.removeChild(textArea);
+                                                                        } catch (err) {
+                                                                            // Silent fail
+                                                                        }
+                                                                    }
+                                                                };
+                                                                copyText(vg.name);
                                                             }}
                                                             title="Copy name"
                                                         >
-                                                            📄
+                                                            �
                                                         </span>
                                                     </div>
                                                     <div className="table-cell date-column">
