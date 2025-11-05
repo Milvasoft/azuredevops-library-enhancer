@@ -13,7 +13,7 @@ export class VariableGroupService {
             isExpanded: true
         };
 
-        // İki geçişli algoritma: Önce tüm node'ları oluştur, sonra parent variable group'ları kontrol et
+        // Two-pass algorithm: First create all nodes, then check parent variable groups
         variableGroups.forEach(vg => {
             const parts = vg.name.split('-');
             let currentNode = root;
@@ -46,13 +46,13 @@ export class VariableGroupService {
             });
         });
 
-        // İkinci geçiş: Eğer bir parent hem variable group hem de child'ları varsa,
-        // parent'ı kendi child'ları içine de ekle
+        // Second pass: If a parent has both a variable group and children,
+        // add the parent as its own child
         const addParentAsChild = (node: TreeNode) => {
             node.children.forEach((childNode) => {
-                // Eğer bu child'ın kendisi bir parent ve variable group ise
+                // If this child is both a parent and a variable group
                 if (childNode.children.size > 0 && childNode.variableGroup) {
-                    // Kendisini kendi child'ları arasına ekle
+                    // Add itself among its own children
                     const selfNode: TreeNode = {
                         name: childNode.name,
                         fullPath: childNode.fullPath,
@@ -61,7 +61,7 @@ export class VariableGroupService {
                         variableGroup: childNode.variableGroup
                     };
                     
-                    // Yeni Map oluştur ve kendi node'u en başa ekle
+                    // Create new Map and add self node at the beginning
                     const newChildren = new Map<string, TreeNode>();
                     newChildren.set(childNode.name, selfNode);
                     childNode.children.forEach((child, key) => {
@@ -69,11 +69,11 @@ export class VariableGroupService {
                     });
                     childNode.children = newChildren;
                     
-                    // Parent artık sadece folder
+                    // Parent is now just a folder
                     delete childNode.variableGroup;
                 }
                 
-                // Recursive olarak devam et
+                // Continue recursively
                 addParentAsChild(childNode);
             });
         };

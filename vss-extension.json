@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "library-enhancer",
   "name": "Library Enhancer",
-  "version": "2.0.19",
+  "version": "2.0.13",
   "publisher": "milvasoft",
   "public": true,
   "targets": [
@@ -13,8 +13,7 @@
   "description": "Enhanced Library/Variable Groups management with hierarchical grouping",
   "categories": ["Azure Pipelines"],
   "scopes": [
-    "vso.build_execute",
-    "vso.variablegroups_manage"
+    "vso.variablegroups"
   ],
   "icons": {
     "default": "images/icon.png"

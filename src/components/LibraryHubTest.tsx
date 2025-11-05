@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Card } from "azure-devops-ui/Card";
+import { Icon } from "azure-devops-ui/Icon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { VariableGroup, TreeNode } from "../types/types";
@@ -16,6 +17,7 @@ interface LibraryHubTestState {
     loading: boolean;
     error: string | null;
     treeRoot: TreeNode | null;
+    viewMode: 'hierarchy' | 'list';
 }
 
 export class LibraryHubTest extends React.Component<LibraryHubTestProps, LibraryHubTestState> {
@@ -25,7 +27,8 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
         this.state = {
             loading: false,
             error: null,
-            treeRoot: null
+            treeRoot: null,
+            viewMode: 'hierarchy'
         };
     }
 
@@ -61,8 +64,14 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
         }
     };
 
+    private toggleViewMode = () => {
+        this.setState(prevState => ({
+            viewMode: prevState.viewMode === 'hierarchy' ? 'list' : 'hierarchy'
+        }));
+    };
+
     render() {
-        const { loading, error, treeRoot } = this.state;
+        const { loading, error, treeRoot, viewMode } = this.state;
 
         if (loading) {
             return (
@@ -105,14 +114,122 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
         return (
             <div className="library-hub-container">
                 <div className="library-hub-header">
-                    <h2>Library - Variable Groups</h2>
-                    <div className="subtitle">{totalGroups} variable group{totalGroups !== 1 ? 's' : ''}</div>
+                    <div className="header-content">
+                        <div>
+                            <h2>Library - Variable Groups</h2>
+                            <div className="subtitle">{totalGroups} variable group{totalGroups !== 1 ? 's' : ''}</div>
+                        </div>
+                        <div className="view-toggle">
+                            <button 
+                                className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
+                                onClick={this.toggleViewMode}
+                                title="Hierarchy View"
+                            >
+                                <span className="icon">📊</span>
+                                Hierarchy
+                            </button>
+                            <button 
+                                className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
+                                onClick={this.toggleViewMode}
+                                title="List View"
+                            >
+                                <span className="icon">📋</span>
+                                List
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div className="tree-container">
-                    <HierarchicalTree
-                        root={treeRoot}
-                        onVariableGroupClick={this.handleVariableGroupClick}
-                    />
+                    {viewMode === 'hierarchy' ? (
+                        <HierarchicalTree
+                            root={treeRoot}
+                            onVariableGroupClick={this.handleVariableGroupClick}
+                        />
+                    ) : (
+                        <div className="hierarchical-tree-table">
+                            <div className="table-header">
+                                <div className="table-header-cell name-column">Name</div>
+                                <div className="table-header-cell date-column">Date modified</div>
+                                <div className="table-header-cell modified-by-column">Modified by</div>
+                                <div className="table-header-cell description-column">Description</div>
+                                <div className="table-header-cell variables-column">Variables</div>
+                            </div>
+                            <div className="table-body">
+                                {this.props.variableGroups
+                                    .sort((a, b) => a.name.localeCompare(b.name))
+                                    .map(vg => {
+                                        const variableCount = Object.keys(vg.variables || {}).length;
+                                        const modifiedDate = vg.modifiedOn 
+                                            ? new Date(vg.modifiedOn).toLocaleDateString('en-US', { 
+                                                year: 'numeric', 
+                                                month: 'short', 
+                                                day: 'numeric' 
+                                              })
+                                            : '';
+                                        const modifiedBy = vg.modifiedBy?.displayName || '';
+
+                                        return (
+                                            <div 
+                                                key={vg.id}
+                                                className="table-row variable-group-row"
+                                                onClick={(e) => {
+                                                    // Middle mouse button click - open in new tab
+                                                    if (e.button === 1) {
+                                                        e.preventDefault();
+                                                        this.handleVariableGroupClick(vg, true);
+                                                        return;
+                                                    }
+                                                    const openInNewTab = e.ctrlKey || e.metaKey;
+                                                    this.handleVariableGroupClick(vg, openInNewTab);
+                                                }}
+                                                onContextMenu={(e) => {
+                                                    e.preventDefault();
+                                                    this.handleVariableGroupClick(vg, true);
+                                                }}
+                                                onMouseDown={(e) => {
+                                                    if (e.button === 1) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <div className="table-cell name-column" style={{ paddingLeft: '16px' }}>
+                                                    <span className="type-icon variable-icon">📦</span>
+                                                    <span className="node-name">{vg.name}</span>
+                                                    <Icon
+                                                        iconName="Copy"
+                                                        className="copy-icon"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (navigator.clipboard) {
+                                                                navigator.clipboard.writeText(vg.name).then(() => {
+                                                                    console.log('Name copied:', vg.name);
+                                                                }).catch(err => {
+                                                                    console.error('Failed to copy:', err);
+                                                                });
+                                                            }
+                                                        }}
+                                                        title="Copy name"
+                                                    />
+                                                </div>
+                                                <div className="table-cell date-column">
+                                                    {modifiedDate}
+                                                </div>
+                                                <div className="table-cell modified-by-column">
+                                                    {modifiedBy}
+                                                </div>
+                                                <div className="table-cell description-column">
+                                                    {vg.description || ''}
+                                                </div>
+                                                <div className="table-cell variables-column">
+                                                    {variableCount}
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                }
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );

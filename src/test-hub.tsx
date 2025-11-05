@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { LibraryHubTest } from "./components/LibraryHubTest";
 
-// Test için direkt data yükle
+// Load data directly for testing
 fetch('./test/test-data.json')
     .then(response => response.json())
     .then(data => {

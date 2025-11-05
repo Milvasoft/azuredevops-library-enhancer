@@ -61,7 +61,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             this.organizationUrl = `https://${hostContext.name}.visualstudio.com`;
             console.log('Organization URL:', this.organizationUrl);
 
-            // Variable Group'ları çek
+            // Fetch Variable Groups
             await this.loadVariableGroups();
 
         } catch (error) {
@@ -77,10 +77,10 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
         try {
             console.log('Loading variable groups for project:', this.projectName);
             
-            // RestClient'ı project context ile oluştur
+            // Create RestClient with project context
             const client = getClient(TaskAgentRestClient);
             
-            // Project name yerine project ID kullanmayı deneyelim
+            // Use project ID instead of project name
             const projectService = await SDK.getService<IProjectPageService>(
                 CommonServiceIds.ProjectPageService
             );
@@ -104,7 +104,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                 variables: vg.variables
             }));
 
-            // Hiyerarşik yapıyı oluştur
+            // Build hierarchical structure
             const treeRoot = VariableGroupService.buildHierarchy(variableGroups);
 
             this.setState({

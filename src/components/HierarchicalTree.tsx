@@ -16,13 +16,15 @@ interface TreeNodeItemProps {
 
 interface TreeNodeItemState {
     isExpanded: boolean;
+    isCopied: boolean;
 }
 
 class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState> {
     constructor(props: TreeNodeItemProps) {
         super(props);
         this.state = {
-            isExpanded: false
+            isExpanded: false,
+            isCopied: false
         };
     }
 
@@ -37,16 +39,31 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
         const { node, onVariableGroupClick } = this.props;
         const hasChildren = node.children.size > 0;
         
-        // Eğer child'ları varsa collapse/expand yap
+        // Middle mouse button click - open in new tab
+        if (e.button === 1 && node.variableGroup) {
+            e.preventDefault();
+            onVariableGroupClick(node.variableGroup, true);
+            return;
+        }
+        
+        // If has children, collapse/expand
         if (hasChildren) {
             this.setState(prevState => ({
                 isExpanded: !prevState.isExpanded
             }));
         }
-        // Eğer variable group ise ve child'ı yoksa aç
+        // If it's a variable group without children, open it
         else if (node.variableGroup) {
             const openInNewTab = e.ctrlKey || e.metaKey;
             onVariableGroupClick(node.variableGroup, openInNewTab);
+        }
+    };
+
+    private handleMouseDown = (e: React.MouseEvent) => {
+        // Capture middle mouse button click
+        if (e.button === 1) {
+            e.preventDefault();
+            this.handleRowClick(e);
         }
     };
 
@@ -59,9 +76,26 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
         }
     };
 
+    private handleCopyName = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const { node } = this.props;
+        
+        if (navigator.clipboard && node.variableGroup) {
+            const fullName = node.variableGroup.name;
+            navigator.clipboard.writeText(fullName).then(() => {
+                this.setState({ isCopied: true });
+                setTimeout(() => {
+                    this.setState({ isCopied: false });
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+    };
+
     render() {
         const { node, level } = this.props;
-        const { isExpanded } = this.state;
+        const { isExpanded, isCopied } = this.state;
         const hasChildren = node.children.size > 0;
         const isVariableGroup = !!node.variableGroup;
         const variableCount = node.variableGroup ? Object.keys(node.variableGroup.variables || {}).length : 0;
@@ -86,6 +120,7 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                         backgroundColor: level > 0 ? `rgba(0, 0, 0, ${0.02 + (level * 0.02)})` : undefined
                     }}
                     onClick={this.handleRowClick}
+                    onMouseDown={this.handleMouseDown}
                     onContextMenu={this.handleContextMenu}
                 >
                     <div className="table-cell name-column" style={{ paddingLeft: `${16 + level * 20}px` }}>
@@ -101,6 +136,14 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                             className={`type-icon ${isVariableGroup ? 'variable-icon' : 'folder-icon'}`}
                         />
                         <span className="node-name">{node.name}</span>
+                        {isVariableGroup && (
+                            <Icon
+                                iconName={isCopied ? "CheckMark" : "Copy"}
+                                className={`copy-icon ${isCopied ? 'copied' : ''}`}
+                                onClick={this.handleCopyName}
+                                title={isCopied ? "Copied!" : "Copy name"}
+                            />
+                        )}
                         {hasChildren && !isVariableGroup && (
                             <span className="count-badge">{node.children.size}</span>
                         )}
