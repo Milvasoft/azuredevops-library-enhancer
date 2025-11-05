@@ -1,4 +1,5 @@
 import * as React from "react";
+import "azure-devops-ui/Components/Icon/FluentIcons.css";
 import { Card } from "azure-devops-ui/Card";
 import { Icon } from "azure-devops-ui/Icon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
@@ -189,11 +190,21 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                 }}
                                             >
                                                 <div className="table-cell name-column" style={{ paddingLeft: '16px' }}>
-                                                    <span className="type-icon variable-icon">📦</span>
+                                                    <span 
+                                                        className="type-icon variable-icon"
+                                                        style={{ fontSize: '16px', marginRight: '8px' }}
+                                                    >
+                                                        📦
+                                                    </span>
                                                     <span className="node-name">{vg.name}</span>
-                                                    <Icon
-                                                        iconName="Copy"
+                                                    <span
                                                         className="copy-icon"
+                                                        style={{ 
+                                                            fontSize: '14px', 
+                                                            marginLeft: '8px',
+                                                            cursor: 'pointer',
+                                                            opacity: 0
+                                                        }}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 if (navigator.clipboard) {
@@ -203,7 +214,9 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                                 }
                                                             }}
                                                             title="Copy name"
-                                                    />
+                                                        >
+                                                            📄
+                                                        </span>
                                                 </div>
                                                 <div className="table-cell date-column">
                                                     {modifiedDate}

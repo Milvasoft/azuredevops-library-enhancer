@@ -125,24 +125,35 @@ class TreeNodeItem extends React.Component<TreeNodeItemProps, TreeNodeItemState>
                 >
                     <div className="table-cell name-column" style={{ paddingLeft: `${16 + level * 20}px` }}>
                         {hasChildren && (
-                            <Icon
-                                iconName={isExpanded ? "ChevronDown" : "ChevronRight"}
+                            <span 
                                 className="chevron-icon"
-                            />
+                                style={{ cursor: 'pointer', fontSize: '12px', marginRight: '4px' }}
+                            >
+                                {isExpanded ? '▼' : '▶'}
+                            </span>
                         )}
                         {!hasChildren && <div className="chevron-placeholder" />}
-                        <Icon
-                            iconName={isVariableGroup ? "Variable2" : "FabricFolderFill"}
+                        <span 
                             className={`type-icon ${isVariableGroup ? 'variable-icon' : 'folder-icon'}`}
-                        />
+                            style={{ fontSize: '16px', marginRight: '8px' }}
+                        >
+                            {isVariableGroup ? '📦' : '📁'}
+                        </span>
                         <span className="node-name">{node.name}</span>
                         {isVariableGroup && (
-                            <Icon
-                                iconName={isCopied ? "CheckMark" : "Copy"}
+                            <span
                                 className={`copy-icon ${isCopied ? 'copied' : ''}`}
                                 onClick={this.handleCopyName}
                                 title={isCopied ? "Copied!" : "Copy name"}
-                            />
+                                style={{ 
+                                    fontSize: '14px', 
+                                    marginLeft: '8px',
+                                    cursor: 'pointer',
+                                    opacity: 0
+                                }}
+                            >
+                                {isCopied ? '✅' : '📄'}
+                            </span>
                         )}
                         {hasChildren && !isVariableGroup && (
                             <span className="count-badge">{node.children.size}</span>
