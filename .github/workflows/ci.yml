@@ -44,9 +44,9 @@ jobs:
         fi
         
     - name: Upload build artifacts
-      if: matrix.node-version == '20.x'
+      if: matrix.node-version == '20.x' && github.event_name == 'pull_request'
       uses: actions/upload-artifact@v4
       with:
         name: dist
         path: dist/
-        retention-days: 7
+        retention-days: 1
