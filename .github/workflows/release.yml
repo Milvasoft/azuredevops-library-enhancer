@@ -56,7 +56,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Upload to Marketplace (Optional)
-      if: secrets.AZURE_DEVOPS_PAT != ''
+      if: ${{ secrets.AZURE_DEVOPS_PAT != '' }}
       run: |
         echo "Publishing to Visual Studio Marketplace..."
         tfx extension publish --vsix ${{ steps.vsix.outputs.VSIX_FILE }} --token ${{ secrets.AZURE_DEVOPS_PAT }}
