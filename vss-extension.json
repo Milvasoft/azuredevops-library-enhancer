@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "library-enhancer",
   "name": "Library Enhancer",
-  "version": "2.0.19",
+  "version": "2.1.1",
   "publisher": "milvasoft",
   "public": true,
   "targets": [
@@ -10,8 +10,35 @@
       "id": "Microsoft.VisualStudio.Services"
     }
   ],
-  "description": "Enhanced Library/Variable Groups management with hierarchical grouping",
+  "description": "Enhanced Library/Variable Groups management with hierarchical grouping. Open-source and privacy-focused - runs entirely in your browser, no external data transmission.",
   "categories": ["Azure Pipelines"],
+  "tags": [
+    "variable groups",
+    "library",
+    "pipelines",
+    "organization",
+    "hierarchy",
+    "open-source",
+    "privacy"
+  ],
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/Milvasoft/azuredevops-library-enhancer"
+  },
+  "links": {
+    "home": {
+      "uri": "https://github.com/Milvasoft/azuredevops-library-enhancer"
+    },
+    "repository": {
+      "uri": "https://github.com/Milvasoft/azuredevops-library-enhancer"
+    },
+    "issues": {
+      "uri": "https://github.com/Milvasoft/azuredevops-library-enhancer/issues"
+    },
+    "support": {
+      "uri": "https://github.com/Milvasoft/azuredevops-library-enhancer/issues"
+    }
+  },
   "scopes": [
     "vso.variablegroups_read"
   ],

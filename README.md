@@ -172,11 +172,33 @@ MIT License - feel free to use and modify.
 
 ## 🔒 Privacy & Security
 
-This extension:
-- Only accesses Variable Group data you have permission to view
-- Does not store or transmit data outside Azure DevOps
-- Runs entirely within your Azure DevOps environment
-- Uses read-only API permissions
+**Your data is safe.** This is a critical concern for variable groups that often contain sensitive information like API keys, connection strings, and secrets.
+
+### 🛡️ Security Guarantees
+
+- ✅ **100% Open Source**: All code is publicly available on [GitHub](https://github.com/Milvasoft/azuredevops-library-enhancer) for audit
+- ✅ **No External Servers**: Extension runs entirely in your browser, no backend services
+- ✅ **No Data Transmission**: Zero external API calls or data uploads
+- ✅ **Read-Only Access**: Uses `vso.variablegroups_read` scope - cannot modify or delete anything
+- ✅ **No Analytics or Tracking**: No telemetry, no usage statistics, no cookies
+- ✅ **Local Processing Only**: All grouping and rendering happens client-side in your browser
+- ✅ **Microsoft Security Model**: Inherits Azure DevOps' security and permission system
+
+### 🔍 How to Verify
+
+1. Review the [source code](https://github.com/Milvasoft/azuredevops-library-enhancer) yourself
+2. Check the extension's permissions in Azure DevOps organization settings
+3. Use browser DevTools to verify no external network requests
+4. Build and package from source if you prefer
+
+### 🔐 Sensitive Data Handling
+
+- Variable group **values** are never accessed - only names, descriptions, and metadata
+- The extension only displays what you already have permission to see
+- No clipboard or localStorage usage for sensitive data
+- Works within Azure DevOps' existing security context
+
+**Bottom line**: If you can see it in the standard Library view, you can trust it in the enhanced view. If you don't trust it, [audit the code](https://github.com/Milvasoft/azuredevops-library-enhancer).
 
 ## ⚠️ Compatibility
 
