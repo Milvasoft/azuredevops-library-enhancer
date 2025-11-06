@@ -1,6 +1,6 @@
 {
   "name": "azuredevops-library-enhancer",
-  "version": "1.0.0",
+  "version": "2.1.3",
   "description": "Azure DevOps Extension for enhanced Library/Variable Groups management with hierarchical grouping",
   "keywords": [
     "azure-devops",
@@ -10,9 +10,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "webpack --mode production",
+    "presync": "node scripts/sync-version.js",
+    "build": "npm run presync && webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "package": "tfx extension create --manifest-globs vss-extension.json",
+    "package": "npm run presync && tfx extension create --manifest-globs vss-extension.json",
     "publish": "tfx extension publish --manifest-globs vss-extension.json",
     "test:serve": "node test/serve.js"
   },

@@ -1,5 +1,10 @@
 # Azure DevOps Library Enhancer
 
+[![CI](https://github.com/Milvasoft/azuredevops-library-enhancer/actions/workflows/ci.yml/badge.svg)](https://github.com/Milvasoft/azuredevops-library-enhancer/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Milvasoft/azuredevops-library-enhancer/actions/workflows/codeql.yml/badge.svg)](https://github.com/Milvasoft/azuredevops-library-enhancer/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Visual Studio Marketplace](https://img.shields.io/visual-studio-marketplace/v/milvasoft.library-enhancer?label=VS%20Marketplace)](https://marketplace.visualstudio.com/items?itemName=milvasoft.library-enhancer)
+
 Enhance your Azure DevOps Library experience with hierarchical variable group organization and improved navigation.
 
 ![Usage Demo](images/usage.gif)
