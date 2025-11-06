@@ -14,7 +14,6 @@ import { TaskAgentRestClient } from "azure-devops-extension-api/TaskAgent";
 import { VariableGroupService } from "../services/VariableGroupService";
 import { VariableGroup, TreeNode } from "../types/types";
 import { HierarchicalTree } from "./HierarchicalTree";
-import "./LibraryHub.css";
 import "../styles/library-hub.css";
 
 interface LibraryHubState {
@@ -183,33 +182,40 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
 
         return (
             <div className="library-hub-container">
-                <Card className="flex-grow">
-                    <div className="library-hub-content">
-                        <div className="header-content">
-                            <h2 className="library-hub-title">Variable Groups</h2>
-                            <div className="view-toggle">
-                                <button 
-                                    className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
-                                    onClick={this.toggleViewMode}
-                                >
-                                    📑 Hierarchy
-                                </button>
-                                <button 
-                                    className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
-                                    onClick={this.toggleViewMode}
-                                >
-                                    ☰ List
-                                </button>
-                            </div>
+                <div className="library-hub-header">
+                    <div className="header-content">
+                        <div>
+                            <h2>Library - Variable Groups</h2>
+                            <div className="subtitle">{variableGroups.length} variable group{variableGroups.length !== 1 ? 's' : ''}</div>
                         </div>
-                        
-                        {viewMode === 'hierarchy' ? (
-                            <HierarchicalTree
-                                root={treeRoot}
-                                onVariableGroupClick={this.handleVariableGroupClick}
-                            />
-                        ) : (
-                            <div className="hierarchical-tree-table">
+                        <div className="view-toggle">
+                            <button 
+                                className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
+                                onClick={this.toggleViewMode}
+                                title="Hierarchy View"
+                            >
+                                 <span className="icon">📑</span>
+                                 Hierarchy
+                            </button>
+                            <button 
+                                className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
+                                onClick={this.toggleViewMode}
+                                title="List View"
+                            >
+                                 <span className="icon">☰</span>
+                                 List
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div className="tree-container">
+                    {viewMode === 'hierarchy' ? (
+                        <HierarchicalTree
+                            root={treeRoot}
+                            onVariableGroupClick={this.handleVariableGroupClick}
+                        />
+                    ) : (
+                        <div className="hierarchical-tree-table">
                                 <div className="table-header">
                                     <div className="table-header-cell name-column">Name</div>
                                     <div className="table-header-cell date-column">Date modified</div>
@@ -326,8 +332,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                 </div>
                             </div>
                         )}
-                    </div>
-                </Card>
+                </div>
             </div>
         );
     }

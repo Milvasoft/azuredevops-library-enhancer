@@ -7,7 +7,6 @@ import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { VariableGroup, TreeNode } from "../types/types";
 import { VariableGroupService } from "../services/VariableGroupService";
 import { HierarchicalTree } from "./HierarchicalTree";
-import "./LibraryHub.css";
 import "../styles/library-hub.css";
 
 interface LibraryHubTestProps {
@@ -130,7 +129,7 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                 onClick={this.toggleViewMode}
                                 title="List View"
                             >
-                                <span className="icon">📋</span>
+                                <span className="icon">☰</span>
                                 List
                             </button>
                         </div>
