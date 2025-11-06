@@ -58,6 +58,6 @@ jobs:
     - name: Upload to Marketplace
       run: |
         echo "Publishing to Visual Studio Marketplace..."
-        tfx extension publish --vsix ${{ steps.vsix.outputs.VSIX_FILE }} --token ${{secrets.AZURE_DEVOPS_PAT}}
+        tfx extension publish --vsix ${{ steps.vsix.outputs.VSIX_FILE }} --token ${{secrets.AZURE_DEVOPS_PAT}} --no-wait-validation
       env:
         AZURE_DEVOPS_PAT: ${{secrets.AZURE_DEVOPS_PAT}}
