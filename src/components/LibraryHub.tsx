@@ -22,6 +22,7 @@ interface LibraryHubState {
     variableGroups: VariableGroup[];
     treeRoot: TreeNode | null;
     viewMode: 'hierarchy' | 'list';
+    searchQuery: string;
 }
 
 export class LibraryHub extends React.Component<{}, LibraryHubState> {
@@ -35,7 +36,8 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
             error: null,
             variableGroups: [],
             treeRoot: null,
-            viewMode: 'hierarchy'
+            viewMode: 'hierarchy',
+            searchQuery: ''
         };
     }
 
@@ -141,8 +143,27 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
         }));
     };
 
+    private handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ searchQuery: event.target.value });
+    };
+
+    private filterVariableGroups = (groups: VariableGroup[], query: string): VariableGroup[] => {
+        if (!query.trim()) {
+            return groups;
+        }
+        
+        const lowerQuery = query.toLowerCase();
+        return groups.filter(vg => 
+            vg.name.toLowerCase().includes(lowerQuery) ||
+            (vg.description && vg.description.toLowerCase().includes(lowerQuery))
+        );
+    };
+
     render() {
-        const { loading, error, treeRoot, variableGroups, viewMode } = this.state;
+        const { loading, error, treeRoot, variableGroups, viewMode, searchQuery } = this.state;
+        const filteredGroups = this.filterVariableGroups(variableGroups, searchQuery);
+        const filteredTreeRoot = searchQuery.trim() ? 
+            VariableGroupService.buildHierarchy(filteredGroups) : treeRoot;
 
         if (loading) {
             return (
@@ -186,32 +207,42 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                     <div className="header-content">
                         <div>
                             <h2>Library - Variable Groups</h2>
-                            <div className="subtitle">{variableGroups.length} variable group{variableGroups.length !== 1 ? 's' : ''}</div>
+                            <div className="subtitle">
+                                {filteredGroups.length} of {variableGroups.length} variable group{variableGroups.length !== 1 ? 's' : ''}
+                                {searchQuery && filteredGroups.length !== variableGroups.length && ' (filtered)'}
+                            </div>
                         </div>
-                        <div className="view-toggle">
-                            <button 
-                                className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
-                                onClick={this.toggleViewMode}
-                                title="Hierarchy View"
-                            >
-                                 <span className="icon">📑</span>
-                                 Hierarchy
-                            </button>
-                            <button 
-                                className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
-                                onClick={this.toggleViewMode}
-                                title="List View"
-                            >
-                                 <span className="icon">☰</span>
-                                 List
-                            </button>
+                        <div className="header-actions">
+                            <input
+                                type="text"
+                                className="search-input"
+                                placeholder="Search variable groups..."
+                                value={searchQuery}
+                                onChange={this.handleSearchChange}
+                            />
+                            <div className="view-toggle">
+                                <button 
+                                    className={`toggle-button ${viewMode === 'hierarchy' ? 'active' : ''}`}
+                                    onClick={this.toggleViewMode}
+                                    title="Hierarchy View"
+                                >
+                                    📑 Hierarchy
+                                </button>
+                                <button 
+                                    className={`toggle-button ${viewMode === 'list' ? 'active' : ''}`}
+                                    onClick={this.toggleViewMode}
+                                    title="List View"
+                                >
+                                    ☰ List
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div className="tree-container">
                     {viewMode === 'hierarchy' ? (
                         <HierarchicalTree
-                            root={treeRoot}
+                            root={filteredTreeRoot!}
                             onVariableGroupClick={this.handleVariableGroupClick}
                         />
                     ) : (
@@ -224,7 +255,7 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                     <div className="table-header-cell variables-column">Variables</div>
                                 </div>
                                 <div className="table-body">
-                                    {[...variableGroups]
+                                    {filteredGroups
                                         .sort((a, b) => a.name.localeCompare(b.name))
                                         .map(vg => {
                                             const variableCount = Object.keys(vg.variables || {}).length;

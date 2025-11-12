@@ -74,6 +74,33 @@ html, body {
     color: var(--text-secondary-color, #605e5c);
 }
 
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-input {
+    padding: 6px 12px;
+    border: 1px solid var(--palette-neutral-20, #e1dfdd);
+    border-radius: 2px;
+    font-size: 14px;
+    min-width: 250px;
+    background: var(--background-color, #fff);
+    color: var(--text-primary-color, #323130);
+    transition: border-color 0.15s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--communication-foreground, #0078d4);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary-color, #605e5c);
+}
+
 /* View Toggle */
 .view-toggle {
     display: flex;
