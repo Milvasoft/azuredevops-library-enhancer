@@ -1,6 +1,6 @@
 {
   "name": "azuredevops-library-enhancer",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Azure DevOps Extension for enhanced Library/Variable Groups management with hierarchical grouping",
   "keywords": [
     "azure-devops",

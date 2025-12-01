@@ -2,7 +2,7 @@
   "manifestVersion": 1,
   "id": "library-enhancer",
   "name": "Library Enhancer",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "publisher": "milvasoft",
   "public": true,
   "targets": [
