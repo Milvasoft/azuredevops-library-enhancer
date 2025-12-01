@@ -32,9 +32,15 @@ const server = http.createServer((req, res) => {
                 res.end(`Server Error: ${err.code}`);
             }
         } else {
-            res.writeHead(200, { 
+            // Development-only CORS policy: allow only local preview origins.
+            // Sonar raises a security issue for wildcard CORS; do NOT use '*' in production.
+            const ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+            const requestOrigin = req.headers && req.headers.origin;
+            const allowOrigin = requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : 'null';
+
+            res.writeHead(200, {
                 'Content-Type': contentType,
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': allowOrigin
             });
             res.end(content, 'utf-8');
         }
