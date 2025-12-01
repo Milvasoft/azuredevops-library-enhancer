@@ -128,7 +128,17 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
         );
 
         if (openInNewTab) {
-            window.open(url, '_blank');
+            // Best-effort: open new tab without stealing focus. Browsers control focus behavior,
+            // but we try to blur the new window and return focus to the current window.
+            const newWin = window.open(url, '_blank');
+            if (newWin) {
+                try {
+                    newWin.blur();
+                    window.focus();
+                } catch (err) {
+                    // ignore - some browsers disallow programmatic focus/blur
+                }
+            }
         } else {
             const navService = await SDK.getService<IHostNavigationService>(
                 CommonServiceIds.HostNavigationService
@@ -273,24 +283,21 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
                                                     key={vg.id}
                                                     className="table-row variable-group-row"
                                                     onClick={(e) => {
-                                                        // Middle mouse button click - open in new tab
-                                                        if (e.button === 1) {
+                                                            const openInNewTab = e.ctrlKey || e.metaKey;
+                                                            this.handleVariableGroupClick(vg, openInNewTab);
+                                                        }}
+                                                        onContextMenu={(e) => {
                                                             e.preventDefault();
                                                             this.handleVariableGroupClick(vg, true);
-                                                            return;
-                                                        }
-                                                        const openInNewTab = e.ctrlKey || e.metaKey;
-                                                        this.handleVariableGroupClick(vg, openInNewTab);
-                                                    }}
-                                                    onContextMenu={(e) => {
-                                                        e.preventDefault();
-                                                        this.handleVariableGroupClick(vg, true);
-                                                    }}
-                                                    onMouseDown={(e) => {
-                                                        if (e.button === 1) {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
+                                                        }}
+                                                        onMouseDown={(e) => {
+                                                            // Handle middle-button reliably on mouse down: open in new tab
+                                                            if (e.button === 1) {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                this.handleVariableGroupClick(vg, true);
+                                                            }
+                                                        }}
                                                 >
                                                     <div className="table-cell name-column" style={{ paddingLeft: '16px' }}>
 

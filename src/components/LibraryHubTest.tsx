@@ -56,7 +56,17 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
         const url = `https://milvasoft.visualstudio.com/Opsiyon/_library?itemType=VariableGroups&view=VariableGroupView&variableGroupId=${vg.id}`;
         
         if (openInNewTab) {
-            window.open(url, '_blank');
+            // Best-effort: open new tab without stealing focus. Browsers control focus behaviour,
+            // but we try to blur the new window and return focus to the current window.
+            const newWin = window.open(url, '_blank');
+            if (newWin) {
+                try {
+                    newWin.blur();
+                    window.focus();
+                } catch (err) {
+                    // ignore - some browsers disallow programmatic focus/blur
+                }
+            }
         } else {
             window.location.href = url;
         }
@@ -202,12 +212,6 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                 key={vg.id}
                                                 className="table-row variable-group-row"
                                                 onClick={(e) => {
-                                                    // Middle mouse button click - open in new tab
-                                                    if (e.button === 1) {
-                                                        e.preventDefault();
-                                                        this.handleVariableGroupClick(vg, true);
-                                                        return;
-                                                    }
                                                     const openInNewTab = e.ctrlKey || e.metaKey;
                                                     this.handleVariableGroupClick(vg, openInNewTab);
                                                 }}
@@ -216,8 +220,11 @@ export class LibraryHubTest extends React.Component<LibraryHubTestProps, Library
                                                     this.handleVariableGroupClick(vg, true);
                                                 }}
                                                 onMouseDown={(e) => {
+                                                    // Handle middle-button reliably on mouse down: open in new tab
                                                     if (e.button === 1) {
                                                         e.preventDefault();
+                                                        e.stopPropagation();
+                                                        this.handleVariableGroupClick(vg, true);
                                                     }
                                                 }}
                                             >
