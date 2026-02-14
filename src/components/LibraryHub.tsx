@@ -8,7 +8,7 @@ import { ObservableValue } from "azure-devops-ui/Core/Observable";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import * as SDK from "azure-devops-extension-sdk";
-import { CommonServiceIds, IProjectPageService, IHostNavigationService } from "azure-devops-extension-api";
+import { CommonServiceIds, IProjectPageService, IHostNavigationService, ILocationService } from "azure-devops-extension-api";
 import { getClient } from "azure-devops-extension-api";
 import { TaskAgentRestClient } from "azure-devops-extension-api/TaskAgent";
 import { VariableGroupService } from "../services/VariableGroupService";
@@ -57,9 +57,15 @@ export class LibraryHub extends React.Component<{}, LibraryHubState> {
 
             this.projectName = project.name;
             
-            // Get organization URL
-            const hostContext = SDK.getHost();
-            this.organizationUrl = `https://${hostContext.name}.visualstudio.com`;
+            // Get organization URL using LocationService (works for both cloud and on-premise)
+            const locationService = await SDK.getService<ILocationService>(
+                CommonServiceIds.LocationService
+            );
+            this.organizationUrl = await locationService.getServiceLocation();
+            // Remove trailing slash if present
+            if (this.organizationUrl.endsWith('/')) {
+                this.organizationUrl = this.organizationUrl.slice(0, -1);
+            }
 
             // Fetch Variable Groups
             await this.loadVariableGroups();
